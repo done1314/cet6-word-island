@@ -3,7 +3,7 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 const STORAGE = 'word-island-cet6-v1';
 const DAY = 86400000;
 let words = [];
-let state = { cards: {}, saved: [], dailyLimit: 20, day: '', learnedToday: 0 };
+let state = { cards: {}, saved: [], dailyLimit: 210, day: '', learnedToday: 0, sprint2026: true };
 let session = [];
 let position = 0;
 let shown = 60;
@@ -16,6 +16,7 @@ function load() {
   try { state = { ...state, ...JSON.parse(localStorage.getItem(STORAGE) || '{}') }; } catch {}
   if (!state.cards || typeof state.cards !== 'object') state.cards = {};
   if (!Array.isArray(state.saved)) state.saved = [];
+  if (!state.sprint2026) { state.dailyLimit = 210; state.sprint2026 = true; save(); }
   if (state.day !== localDay()) { state.day = localDay(); state.learnedToday = 0; save(); }
 }
 function dayStart() { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); }
@@ -34,7 +35,7 @@ function renderHome() {
   safeText('#learned-today', state.learnedToday);
   safeText('#due-count', dueWords().length);
   safeText('#mastered-count', mastered());
-  safeText('#today-hint', `每天 ${state.dailyLimit} 个新词 · ${dueWords().length} 个待复习`);
+  safeText('#today-hint', `12 月 5 日前学完 · 每天 ${state.dailyLimit} 个新词 · ${dueWords().length} 个待复习`);
 }
 function startSession() {
   const due = dueWords();
@@ -121,6 +122,7 @@ async function init() {
   $('#filter-select').addEventListener('change', () => { shown = 60; renderLibrary(); });
   $('#load-more').addEventListener('click', () => { shown += 60; renderLibrary(); });
   $('#daily-limit').addEventListener('change', event => { state.dailyLimit = Number(event.target.value); save(); });
+  for (const n of [210, 230, 250]) { const option = new Option(`${n} 词 · 冲刺`, String(n)); $('#daily-limit').add(option); }
   $('#export-btn').addEventListener('click', exportProgress);
   window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstall = event; $('#install-btn').hidden = false; });
   $('#install-btn').addEventListener('click', async () => { if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; } });
