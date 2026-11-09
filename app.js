@@ -17,7 +17,7 @@ function load() {
   try { state = { ...state, ...JSON.parse(localStorage.getItem(STORAGE) || '{}') }; } catch {}
   if (!state.cards || typeof state.cards !== 'object') state.cards = {};
   if (!Array.isArray(state.saved)) state.saved = [];
-  if (!state.sprint2026) { state.dailyLimit = 210; state.sprint2026 = true; save(); }
+  if (state.sprint2026Version !== 2) { state.dailyLimit = 210; state.sprint2026Version = 2; save(); }
   if (state.day !== localDay()) { state.day = localDay(); state.learnedToday = 0; save(); }
 }
 function dayStart() { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); }
