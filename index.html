@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172d26">
+  <meta name="description" content="六级词汇学习与间隔复习">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+  <title>词屿 · 六级词汇</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="brand"><span class="brand-icon">词</span><span>词屿 <small>WORD ISLAND</small></span></div>
+      <nav aria-label="主导航"><button class="nav active" data-view="home">学习</button><button class="nav" data-view="library">词库</button><button class="nav" data-view="stats">进度</button></nav>
+      <button id="install-btn" class="install" hidden>安装应用 ↗</button>
+    </header>
+    <main>
+      <section id="home" class="view active">
+        <div class="hero"><div class="hero-copy"><p class="eyebrow">CET-6 · DAILY PRACTICE</p><h1>每天一点，<br><em>记住更多。</em></h1><p>从 5,000 多个六级词汇开始。先认识，再回忆，按遗忘节奏复习。</p><div class="hero-actions"><button class="primary" id="start-btn">开始今日学习 <span>↗</span></button><span id="today-hint"></span></div></div><div class="hero-art" aria-hidden="true"><div class="orbit o1"></div><div class="orbit o2"></div><span class="art-word">remember</span><span class="art-note">/rɪˈmembər/</span><span class="art-seed s1">a</span><span class="art-seed s2">b</span><span class="art-seed s3">c</span></div></div>
+        <div class="section-heading"><div><p class="eyebrow">YOUR ROUTINE</p><h2>今天的节奏</h2></div><span id="date-label"></span></div>
+        <div class="metric-grid"><article class="metric"><span>今日已学</span><strong id="learned-today">0</strong><small>个单词</small></article><article class="metric"><span>待复习</span><strong id="due-count">0</strong><small>个单词</small></article><article class="metric"><span>累计掌握</span><strong id="mastered-count">0</strong><small>个单词</small></article></div>
+        <div class="study-panel"><div><p class="eyebrow">SPACED REPETITION</p><h3>下一轮，从这里继续</h3><p>先复习到期的词，再学习新词。每次只需专注眼前一张卡片。</p></div><button class="outline" id="continue-btn">进入学习 →</button></div>
+      </section>
+      <section id="study" class="view"><div class="study-top"><button class="back" id="back-btn">← 返回</button><span id="session-label">今日学习</span><span id="session-progress">0 / 0</span></div><div class="progress-track"><div id="progress-fill"></div></div><div class="card" id="word-card"><div class="card-top"><span id="card-mode">新词</span><button id="speak-btn" aria-label="朗读单词">♪ 发音</button></div><div class="word-center"><div class="word-index" id="word-index"></div><h2 id="word-text"></h2><p id="pronunciation"></p></div><div class="answer" id="answer" hidden><span>词义</span><p id="meaning"></p><small>释义来自所提供的 PDF，个别词条可能需要校对。</small></div><button class="reveal" id="reveal-btn">显示词义 ↓</button></div><div class="rating" id="rating" hidden><button data-grade="again"><strong>忘了</strong><small>稍后再看</small></button><button data-grade="hard"><strong>模糊</strong><small>明天复习</small></button><button data-grade="good"><strong>记得</strong><small>间隔复习</small></button><button data-grade="easy"><strong>熟悉</strong><small>延长间隔</small></button></div><p class="study-footnote">学习记录只保存在当前浏览器中。</p></section>
+      <section id="library" class="view"><div class="page-intro"><p class="eyebrow">THE WORD COLLECTION</p><h1>六级词库</h1><p>按字母顺序浏览、搜索和收藏。词义与注音保留原 PDF 的写法。</p></div><div class="library-toolbar"><input id="search-input" type="search" placeholder="搜索单词或中文词义" aria-label="搜索词库"><select id="filter-select" aria-label="筛选词汇"><option value="all">全部词汇</option><option value="saved">我的收藏</option><option value="learning">学过的</option></select></div><p class="result-count" id="result-count"></p><div id="word-list" class="word-list"></div><button id="load-more" class="load-more" hidden>加载更多</button></section>
+      <section id="stats" class="view"><div class="page-intro"><p class="eyebrow">YOUR JOURNEY</p><h1>学习进度</h1><p>一点一滴，都会成为你的词汇量。</p></div><div class="stats-feature"><div><span>已接触词汇</span><strong id="seen-count">0</strong><small id="coverage-label">占词库 0%</small></div><div class="donut" id="coverage-donut"><span>六级<br>词库</span></div></div><div class="metric-grid stats-grid"><article class="metric"><span>已掌握</span><strong id="stats-mastered">0</strong><small>间隔较长的词</small></article><article class="metric"><span>待复习</span><strong id="stats-due">0</strong><small>今天到期</small></article><article class="metric"><span>已收藏</span><strong id="stats-saved">0</strong><small>重点关注</small></article></div><div class="settings"><h3>学习设置</h3><label>每日新词数量 <select id="daily-limit"><option value="10">10 词</option><option value="20">20 词</option><option value="30">30 词</option><option value="50">50 词</option></select></label><button id="export-btn">导出学习记录 (.json) ↗</button></div></section>
+    </main>
+    <footer><span>词屿 · CET-6</span><span>词表来自用户提供的 PDF · 数据可能存在原始排版或释义错误</span></footer>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
