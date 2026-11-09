@@ -6,6 +6,7 @@ let words = [];
 let state = { cards: {}, saved: [], dailyLimit: 210, day: '', learnedToday: 0, sprint2026: true };
 let session = [];
 let position = 0;
+let phase = 'learn';
 let shown = 60;
 let deferredInstall;
 
@@ -40,24 +41,32 @@ function renderHome() {
 function startSession() {
   const due = dueWords();
   const fresh = words.filter(w => !state.cards[w.id]).slice(0, Math.max(0, state.dailyLimit - state.learnedToday));
-  session = [...due, ...fresh]; position = 0;
+  session = [...due, ...fresh]; position = 0; phase = 'learn';
   if (!session.length) { alert('今天的词汇已经学完啦，明天再来复习。'); return; }
   view('study'); renderCard();
 }
 function renderCard() {
-  if (position >= session.length) { view('home'); alert('本轮学习完成！'); return; }
+  if (position >= session.length) {
+    if (phase === 'learn') { phase = 'spell'; position = 0; alert('今天的词卡学完了，开始集中拼写复习。'); }
+    else { view('home'); alert('今天的拼写复习完成！'); return; }
+  }
   const word = session[position];
   safeText('#session-progress', `${position + 1} / ${session.length}`);
-  safeText('#session-label', state.cards[word.id] ? '到期复习' : '新词学习');
-  safeText('#card-mode', state.cards[word.id] ? '复习词' : '新词');
-  safeText('#word-index', `WORD ${String(word.id).padStart(4, '0')}`);
-  safeText('#word-text', word.word);
-  safeText('#pronunciation', word.pronunciation || '');
+  safeText('#session-label', phase === 'spell' ? '集中拼写复习' : (state.cards[word.id] ? '到期复习' : '新词学习'));
+  safeText('#card-mode', phase === 'spell' ? '拼写复习' : (state.cards[word.id] ? '复习词' : '新词'));
+  safeText('#word-index', phase === 'spell' ? `SPELL ${position + 1}` : `WORD ${String(word.id).padStart(4, '0')}`);
+  safeText('#word-text', phase === 'spell' ? '听音 · 看词义 · 拼写' : word.word);
+  safeText('#pronunciation', phase === 'spell' ? '' : (word.pronunciation || ''));
   safeText('#meaning', word.meaning);
-  $('#answer').hidden = true; $('#rating').hidden = true; $('#reveal-btn').hidden = false;
+  $('#answer').hidden = phase !== 'spell'; $('#rating').hidden = true; $('#reveal-btn').hidden = phase === 'spell';
+  $('#spelling-input').value = '';
+  $('#spelling-feedback').textContent = '';
+  $('#spelling-check').hidden = phase !== 'spell';
+  if (phase === 'spell') $('#spelling-input').focus();
   $('#progress-fill').style.width = `${position / session.length * 100}%`;
 }
 function rate(grade) {
+  if (phase !== 'learn') return;
   const word = session[position];
   const old = state.cards[word.id];
   let interval = old?.interval || 0;
@@ -115,6 +124,24 @@ async function init() {
   $$('.nav').forEach(button => button.addEventListener('click', () => view(button.dataset.view)));
   $('#start-btn').addEventListener('click', startSession); $('#continue-btn').addEventListener('click', startSession);
   $('#back-btn').addEventListener('click', () => view('home'));
+  const spelling = document.createElement('div');
+  spelling.id = 'spelling-check';
+  spelling.style.cssText = 'max-width:760px;margin:-5px auto 18px;padding:20px 24px;background:#e9eddf;border-radius:12px';
+  spelling.innerHTML = '<label for="spelling-input" style="display:block;font-weight:700;margin-bottom:10px">今日拼写复习 · 答对才能进入下一词</label><div style="display:flex;gap:8px"><input id="spelling-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="根据词义输入英文单词" style="min-width:0;flex:1;padding:12px;border:1px solid #aab7a7;border-radius:8px;background:#fffdf6"><button id="check-spelling-btn" type="button" style="border:0;border-radius:8px;background:#172d26;color:white;padding:0 18px">检查</button></div><p id="spelling-feedback" role="status" style="margin:10px 0 0;min-height:20px;font-size:13px"></p>';
+  $('#word-card').after(spelling);
+  function checkSpelling() {
+    const typed = $('#spelling-input').value.trim().normalize('NFKC').toLocaleLowerCase();
+    const expected = session[position].word.trim().normalize('NFKC').toLocaleLowerCase();
+    if (typed === expected) {
+      position++;
+      renderCard();
+    } else {
+      $('#spelling-feedback').textContent = '拼写不正确，请再试一次。';
+      $('#spelling-input').focus();
+    }
+  }
+  $('#check-spelling-btn').addEventListener('click', checkSpelling);
+  $('#spelling-input').addEventListener('keydown', event => { if (event.key === 'Enter') checkSpelling(); });
   $('#reveal-btn').addEventListener('click', () => { $('#answer').hidden = false; $('#rating').hidden = false; $('#reveal-btn').hidden = true; });
   $$('#rating button').forEach(button => button.addEventListener('click', () => rate(button.dataset.grade)));
   $('#speak-btn').addEventListener('click', speak);
