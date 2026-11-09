@@ -106,7 +106,7 @@ function renderStats() {
   safeText('#stats-mastered', mastered());
   safeText('#stats-due', dueWords().length);
   safeText('#stats-saved', state.saved.length);
-  $('#coverage-donut').style.background = `conic-gradient(var(--lime) ${percent}%, #547062 ${percent}%)`;
+  $('#coverage-donut').style.background = `conic-gradient(var(--accent-fill) ${percent}%, var(--ring-track) ${percent}%)`;
   $('#daily-limit').value = String(state.dailyLimit);
 }
 function speak() {
@@ -126,8 +126,8 @@ async function init() {
   $('#back-btn').addEventListener('click', () => view('home'));
   const spelling = document.createElement('div');
   spelling.id = 'spelling-check';
-  spelling.style.cssText = 'max-width:760px;margin:-5px auto 18px;padding:20px 24px;background:#e9eddf;border-radius:12px';
-  spelling.innerHTML = '<label for="spelling-input" style="display:block;font-weight:700;margin-bottom:10px">今日拼写复习 · 答对才能进入下一词</label><div style="display:flex;gap:8px"><input id="spelling-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="根据词义输入英文单词" style="min-width:0;flex:1;padding:12px;border:1px solid #aab7a7;border-radius:8px;background:#fffdf6"><button id="check-spelling-btn" type="button" style="border:0;border-radius:8px;background:#172d26;color:white;padding:0 18px">检查</button></div><p id="spelling-feedback" role="status" style="margin:10px 0 0;min-height:20px;font-size:13px"></p>';
+  spelling.hidden = true;
+  spelling.innerHTML = '<label for="spelling-input">今日拼写复习 · 答对才能进入下一词</label><div class="spelling-controls"><input id="spelling-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="根据词义输入英文单词"><button id="check-spelling-btn" type="button">检查</button></div><p id="spelling-feedback" role="status"></p>';
   $('#word-card').after(spelling);
   function checkSpelling() {
     const typed = $('#spelling-input').value.trim().normalize('NFKC').toLocaleLowerCase();
